@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('relationship_app.urls')),  # Include URLs from relationship_app
    # path('admin/', admin.site.urls),
     path('', include('relationship_app.urls')),
+    
 ]
