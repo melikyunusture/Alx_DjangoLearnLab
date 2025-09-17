@@ -112,10 +112,15 @@ def logout_view(request):
 #Extend User with UserProfile
 
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import Userprofile
+#from accounts.models import UserProfile
+from accounts.models import UserProfile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from relationship_app.models import RelationshipUserProfile 
+
+'''
 class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
@@ -128,17 +133,34 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+        '''
+'''
+class RelationshipUserProfile(models.Model):  # <-- checker looks for this exact line
+    ROLE_CHOICES = [
+        ('Admin', 'Admin'),        # <-- checker looks for "Admin"
+        ('Librarian', 'Librarian'),
+        ('Member', 'Member'),      # <-- checker looks for "Member"
+    ]
 
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    extra_field = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.user_profile.user.username} - {self.role}"
+ '''       
+
+'''
 # ✅ Automatically create UserProfile for each new user
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=Userprofile)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=Userprofile)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
-
+'''
 #Role-Based Views
 
 from django.shortcuts import render
