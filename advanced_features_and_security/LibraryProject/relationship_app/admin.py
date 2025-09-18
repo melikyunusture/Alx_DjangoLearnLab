@@ -2,10 +2,21 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import RelationshipUserProfile
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
 
+class CustomUserAdmin(UserAdmin):
+    """
+    Custom Admin interface for CustomUser model.
+    """
+    fieldsets = UserAdmin.fieldsets + ((None, {'fields': ('date_of_birth', 'profile_photo')}),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (None, {'fields': ('date_of_birth', 'profile_photo')}),
+    )
 
-@admin.register(RelationshipUserProfile)
-class RelationshipUserProfileAdmin(admin.ModelAdmin):
-    list_display = ("user_profile", "friends_count", "status_message")
-    search_fields = ("user_profile__user__username", "status_message")
+# Unregister the default User model
+admin.site.unregister(CustomUser)
+
+# Register the custom User model with the custom admin class
+admin.site.register(CustomUser, CustomUserAdmin)
