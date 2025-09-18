@@ -122,6 +122,8 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.decorators.csrf import csrf_protect
+from .forms import ExampleForm
+#from .models import  ExampleForm from forms.py
 
 # ---- Book List ----
 # This view lists all books and is protected by the 'can_view' permission.
