@@ -143,3 +143,11 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Protect against clickjacking
 X_FRAME_OPTIONS = 'DENY'
+
+# Redirect all non-HTTPS requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HSTS settings for a year (31,536,000 seconds)
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
