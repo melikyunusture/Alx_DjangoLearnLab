@@ -18,10 +18,11 @@ class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books")
 
     def __str__(self):
-        return f"{self.title} by {self.author.name}" '''
+        return f"{self.title} by {self.author.name}" 
+        '''
 
-''' 
-   class Book(models.Model):
+
+class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     publication_year = models.IntegerField()
@@ -112,8 +113,8 @@ class Book(models.Model):
         ]    
 
 
-'''
 
+'''
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
@@ -177,3 +178,4 @@ class Book(models.Model):
             ("can_change_book", "Can change book"),
             ("can_delete_book", "Can delete book"),
         ]
+'''
