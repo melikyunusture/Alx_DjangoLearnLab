@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        background-color: #e9e9e9;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .book-details {
+        flex-grow: 1;
+      }
+      .book-details h2 {
+        margin: 0;
+        font-size: 1.2em;
+      }
+      .book-details p {
+        margin: 5px 0 0;
+        color: #666;
+      }
+      .actions a,
+      .actions button {
+        text-decoration: none;
+        color: white;
+        background-color: #007bff;
+        padding: 8px 12px;
+        border-radius: 5px;
+        margin-left: 5px;
+        border: none;
+        cursor: pointer;
+      }
+      .actions .edit {
+        background-color: #ffc107;
+      }
+      .actions .delete {
+        background-color: #dc3545;
+      }
+      .actions button {
+        background-color: #007bff;
+      }
+      .add-book-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .add-book-link a {
+        background-color: #28a745;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Book List</h1>
+
+      {% if perms.bookshelf.can_create %}
+      <div class="add-book-link">
+        <a href="{% url 'add_book' %}" class="btn add">Add New Book</a>
+      </div>
+      {% endif %}
+
+      <ul>
+        {% for book in books %}
+        <li>
+          <div class="book-details">
+            <h2>{{ book.title }}</h2>
+            <p>by {{ book.author }} ({{ book.publication_year }})</p>
+          </div>
+          <div class="actions">
+            {% if perms.bookshelf.can_edit %}
+            <a href="{% url 'edit_book' book.id %}" class="btn edit">Edit</a>
+            {% endif %} {% if perms.bookshelf.can_delete %}
+            <a href="{% url 'delete_book' book.id %}" class="btn delete"
+              >Delete</a
+            >
+            {% endif %}
+          </div>
+        </li>
+        {% empty %}
+        <li>No books are available.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>

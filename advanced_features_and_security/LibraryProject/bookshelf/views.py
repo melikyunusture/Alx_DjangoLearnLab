@@ -17,6 +17,8 @@ class BookAdmin(admin.ModelAdmin):
 # Register the model with the custom admin
 admin.site.register(Book, BookAdmin)
 
+
+
 '''
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -62,9 +64,7 @@ def delete_book(request, book_id):
 '''
 
 
-
-
-
+'''
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from .models import Book, Author
@@ -112,3 +112,73 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('book_list')
     return render(request, 'bookshelf/delete_book.html', {'book': book})
+
+'''
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import permission_required
+from .models import Book, Author
+from django.views.generic.detail import DetailView
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.views.decorators.csrf import csrf_protect
+
+# ---- Book List ----
+# This view lists all books and is protected by the 'can_view' permission.
+@permission_required('bookshelf.can_view', raise_exception=True)
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+
+# ---- Create Book ----
+# Only users with the 'can_create' permission can access this view.
+@permission_required('bookshelf.can_create', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        # Safely handle user input using ORM
+        title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        publication_year = request.POST.get('publication_year')
+        author = get_object_or_404(Author, id=author_id)
+        Book.objects.create(title=title, author=author, publication_year=publication_year)
+        return redirect('book_list')
+    authors = Author.objects.all()
+    return render(request, 'bookshelf/add_book.html', {'authors': authors})
+
+# ---- Edit Book ----
+# Only users with the 'can_edit' permission can access this view.
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        # Safely handle user input using ORM
+        book.title = request.POST.get('title')
+        book.publication_year = request.POST.get('publication_year')
+        book.save()
+        return redirect('book_list')
+    authors = Author.objects.all()
+    return render(request, 'bookshelf/edit_book.html', {'book': book, 'authors': authors})
+
+# ---- Delete Book ----
+# Only users with the 'can_delete' permission can access this view.
+@permission_required('bookshelf.can_delete', raise_exception=True)
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'bookshelf/delete_book.html', {'book': book})
+
+# ---- Registration View ----
+@csrf_protect
+def register(request):
+    if request.method == 'POST':
+        # Use Django's built-in forms for secure input validation
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('book_list')
+    else:
+        form = UserCreationForm()
+    return render(request, 'bookshelf/register.html', {'form': form})
