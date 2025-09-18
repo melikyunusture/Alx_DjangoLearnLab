@@ -17,7 +17,7 @@ class BookAdmin(admin.ModelAdmin):
 # Register the model with the custom admin
 admin.site.register(Book, BookAdmin)
 
-
+'''
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
@@ -57,3 +57,58 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('list_books')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
+
+
+'''
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import permission_required
+from .models import Book, Author
+
+# ---- Book List ----
+# This view lists all books and is protected by the 'can_view' permission.
+@permission_required('bookshelf.can_view', raise_exception=True)
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+
+# ---- Create Book ----
+# Only users with the 'can_create' permission can access this view.
+@permission_required('bookshelf.can_create', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        publication_year = request.POST.get('publication_year')
+        author = get_object_or_404(Author, id=author_id)
+        Book.objects.create(title=title, author=author, publication_year=publication_year)
+        return redirect('book_list')
+    authors = Author.objects.all()
+    return render(request, 'bookshelf/add_book.html', {'authors': authors})
+
+# ---- Edit Book ----
+# Only users with the 'can_edit' permission can access this view.
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.title = request.POST.get('title')
+        book.publication_year = request.POST.get('publication_year')
+        book.save()
+        return redirect('book_list')
+    authors = Author.objects.all()
+    return render(request, 'bookshelf/edit_book.html', {'book': book, 'authors': authors})
+
+# ---- Delete Book ----
+# Only users with the 'can_delete' permission can access this view.
+@permission_required('bookshelf.can_delete', raise_exception=True)
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'bookshelf/delete_book.html', {'book': book})
